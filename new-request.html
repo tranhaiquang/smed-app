@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Request | SMED Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark">S</div>
+          <div>
+            <strong>SAMHO</strong>
+            <span>SMED HUB</span>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <p>Main Menu</p>
+          <a href="#"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+          <a href="#"><i data-lucide="activity"></i>Live Monitor</a>
+          <a href="#"><i data-lucide="circle-check"></i>My Tasks</a>
+          <a class="active" href="index.html"><i data-lucide="clipboard-list"></i>Changeovers</a>
+          <a href="#"><i data-lucide="chart-no-axes-combined"></i>Analytics</a>
+          <a href="#"><i data-lucide="book-open"></i>Templates</a>
+          <a href="#"><i data-lucide="wrench"></i>Maintenance</a>
+          <a href="#"><i data-lucide="database"></i>Data Control</a>
+        </nav>
+
+        <div class="user-card">
+          <div class="avatar"><i data-lucide="user-round"></i></div>
+          <div>
+            <strong>Admin</strong>
+            <span>Roles.Administrator</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace request-mode">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <span class="section-label">Changeovers</span>
+
+          <div class="top-actions">
+            <div class="language-switch" aria-label="Language selector">
+              <i data-lucide="globe-2"></i>
+              <button>VI</button>
+              <button>EN</button>
+              <button>KO</button>
+            </div>
+            <button class="icon-button" aria-label="Toggle theme">
+              <i data-lucide="sun"></i>
+            </button>
+            <button class="icon-button" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+            </button>
+            <div class="profile">
+              <span><i data-lucide="user-round"></i></span>
+              <div>
+                <strong>Admin</strong>
+                <small>Administrator</small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="page-head">
+          <div>
+            <h1>New Request</h1>
+            <p>Create a structured changeover request</p>
+          </div>
+        </section>
+
+        <section class="request-view" aria-label="Create changeover request">
+          <div class="request-shell">
+            <div class="form-header">
+              <a class="icon-button" href="index.html" aria-label="Back to changeovers">
+                <i data-lucide="arrow-left"></i>
+              </a>
+              <div>
+                <h2>New Changeover Request</h2>
+                <p>Set up the process, model transition, timing, and responsibility groups.</p>
+              </div>
+            </div>
+
+            <form class="request-form">
+              <section class="form-card">
+                <h3>Changeover Type</h3>
+                <div class="segmented-control">
+                  <label class="selected">
+                    <input type="radio" name="type" value="Process" checked />
+                    <i data-lucide="folder-cog"></i>
+                    Process
+                  </label>
+                  <label>
+                    <input type="radio" name="type" value="Machine" />
+                    <i data-lucide="settings-2"></i>
+                    Machine
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="map-pin"></i>Location & Unit</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>Plant</span>
+                    <select name="plant" required>
+                      <option>Select Plant</option>
+                      <option>SAMHO</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Workshop</span>
+                    <select name="workshop" required>
+                      <option>Select Workshop</option>
+                      <option>PLANT A</option>
+                      <option>PLANT B</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Process</span>
+                    <select name="process" required>
+                      <option>Select Process</option>
+                      <option>Stitching</option>
+                      <option>Cutting</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Production Line</span>
+                    <select name="production_line" required>
+                      <option>Select Line</option>
+                      <option>A-01</option>
+                      <option>A-02</option>
+                      <option>A-03</option>
+                      <option>A-04</option>
+                      <option>A-05</option>
+                      <option>A-06</option>
+                      <option>A-07</option>
+                      <option>A-08</option>
+                      <option>A-09</option>
+                      <option>A-10</option>
+                      <option>A-11</option>
+                      <option>A-12</option>
+                      <option>A-13</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="shuffle"></i>Model Transition</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>From Model</span>
+                    <select name="from_model" required>
+                      <option value="">Select Model</option>
+                      <option>880</option>
+                      <option>860</option>
+                      <option>740</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>To Model</span>
+                    <select name="to_model" required>
+                      <option value="">Select Model</option>
+                      <option>880</option>
+                      <option>860</option>
+                      <option>740</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="circle-dot"></i>Classification</h3>
+                <div class="segmented-control three">
+                  <label class="selected">
+                    <input type="radio" name="classification" value="Planned" checked />
+                    Planned
+                  </label>
+                  <label>
+                    <input type="radio" name="classification" value="Delayed" />
+                    Delayed
+                  </label>
+                  <label>
+                    <input type="radio" name="classification" value="Unplanned" />
+                    Unplanned
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="clock-4"></i>Schedule & Responsibility</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>Planned Start Time</span>
+                    <input type="datetime-local" name="planned_start" required />
+                  </label>
+                  <label>
+                    <span>Planned Duration (Minutes)</span>
+                    <input type="number" name="planned_duration_minutes" value="60" min="1" required />
+                  </label>
+                </div>
+
+                <div class="group-field">
+                  <span>Responsible Teams (Specific Groups)</span>
+                  <input type="hidden" name="responsible_group" value="" />
+                  <div class="chips" data-team-selector>
+                    <button type="button" data-team="STT-A01" aria-pressed="false">STT-A01</button>
+                    <button type="button" data-team="STT-A02" aria-pressed="false">STT-A02</button>
+                  </div>
+                </div>
+
+                <div class="group-field">
+                  <span>Responsible Roles (Legacy)</span>
+                  <div class="checkbox-grid">
+                    <label><input type="checkbox" name="responsible_roles" value="Administrator" />Administrator</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Maintenance" />Maintenance</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Operator" />Operator</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Prod Technician" />Prod Technician</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Quality Inspection" />Quality Inspection</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Production Supervisor" />Production Supervisor</label>
+                  </div>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="notebook-pen"></i>Notes</h3>
+                <label>
+                  <span>Request Notes</span>
+                  <textarea name="notes" placeholder="Add changeover details, constraints, or preparation notes"></textarea>
+                </label>
+              </section>
+
+              <div class="form-actions">
+                <a class="secondary-button" href="index.html">Cancel</a>
+                <button type="submit" class="primary-button"><i data-lucide="send"></i>Create Request</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
