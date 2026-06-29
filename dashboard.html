@@ -1,0 +1,168 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIETNAM SAMHO | SMED | LEAN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="dashboard-page">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark">S</div>
+          <div>
+            <strong>SAMHO</strong>
+            <span>SMED HUB</span>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <p>Main Menu</p>
+          <a class="active" href="dashboard.html">
+            <i data-lucide="layout-dashboard"></i>
+            Dashboard
+          </a>
+          <a href="#">
+            <i data-lucide="activity"></i>
+            Live Monitor
+          </a>
+          <a href="#">
+            <i data-lucide="circle-check"></i>
+            My Tasks
+          </a>
+          <a href="changeover.html">
+            <i data-lucide="clipboard-list"></i>
+            Changeovers
+          </a>
+          <a href="#">
+            <i data-lucide="chart-no-axes-combined"></i>
+            Analytics
+          </a>
+          <a href="#">
+            <i data-lucide="book-open"></i>
+            Templates
+          </a>
+          <a href="#">
+            <i data-lucide="wrench"></i>
+            Maintenance
+          </a>
+          <a href="#">
+            <i data-lucide="database"></i>
+            Data Control
+          </a>
+        </nav>
+
+        <div class="user-card">
+          <div class="avatar"><i data-lucide="user-round"></i></div>
+          <div>
+            <strong>Admin</strong>
+            <span>Roles.Administrator</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace dashboard-shell">
+        <header class="topbar dashboard-topbar">
+          <button class="icon-button mobile-menu" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <span class="section-label dashboard-kicker">Dashboard</span>
+
+          <div class="top-actions">
+            <div class="language-switch" aria-label="Language selector">
+              <i data-lucide="globe-2"></i>
+              <button>VI</button>
+              <button>EN</button>
+              <button>KO</button>
+            </div>
+            <button class="icon-button" aria-label="Toggle theme">
+              <i data-lucide="sun"></i>
+            </button>
+            <button class="icon-button" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+            </button>
+            <div class="profile">
+              <span><i data-lucide="user-round"></i></span>
+              <div>
+                <strong>Admin</strong>
+                <small>Administrator</small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="dashboard-canvas" aria-label="Executive analytics dashboard">
+          <div class="dashboard-heading">
+            <div>
+              <h1>Executive Analytics</h1>
+              <p>High-level performance metrics and trends</p>
+            </div>
+            <button class="icon-button" aria-label="Filter analytics">
+              <i data-lucide="funnel"></i>
+            </button>
+          </div>
+
+          <section class="metric-grid" aria-label="Executive metrics">
+            <article class="metric-card">
+              <span class="metric-icon green"><i data-lucide="clipboard-list"></i></span>
+              <mark>+12%</mark>
+              <small>Total Today</small>
+              <strong>0<span>Target: 20</span></strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-icon amber"><i data-lucide="clock-3"></i></span>
+              <mark class="negative">-5%</mark>
+              <small>Avg Duration</small>
+              <strong>0m<span>Goal: 25m</span></strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-icon teal"><i data-lucide="circle-check"></i></span>
+              <small>Completed</small>
+              <strong>0<span>95% rate</span></strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-icon blue"><i data-lucide="circle-dot"></i></span>
+              <small>Pending</small>
+              <strong>0<span>In process</span></strong>
+            </article>
+          </section>
+
+          <a class="analytics-banner" href="changeover.html" aria-label="Open advanced SMED analytics">
+            <div>
+              <h2>Advanced SMED Analytics <i data-lucide="arrow-up-right"></i></h2>
+              <p>Planned vs Unplanned â€¢ Variance Analysis â€¢ Line Performance</p>
+            </div>
+            <span><i data-lucide="scan-line"></i></span>
+          </a>
+
+          <section class="trend-panel" aria-label="7-day performance trend">
+            <div class="panel-head">
+              <div>
+                <h2>7-Day Performance Trend</h2>
+                <p>Every second counts in the Single-Minute Exchange of Die (SMED).</p>
+              </div>
+              <mark>+4.8%</mark>
+            </div>
+            <div class="chart-ghost" aria-hidden="true"></div>
+          </section>
+
+          <section class="status-panel" aria-label="Status distribution">
+            <h2>Status Distribution</h2>
+            <div class="status-total">
+              <strong>0</strong>
+              <span>Total</span>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
+

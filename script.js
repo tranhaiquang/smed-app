@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from "./supabase/supabase.js";
+﻿import { isSupabaseConfigured, supabase } from "./supabase/supabase.js";
 
 const CHANGEOVER_TABLE = "changeover_records";
 
@@ -62,6 +62,7 @@ mobileButton?.addEventListener("click", () => {
 
 requestForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (!validateRequestForm()) return;
   await createRequest(new FormData(requestForm));
 });
 
@@ -74,8 +75,58 @@ document.querySelectorAll(".segmented-control").forEach((control) => {
     if (event.target.type !== "radio") return;
     control.querySelectorAll("label").forEach((label) => label.classList.remove("selected"));
     event.target.closest("label")?.classList.add("selected");
+    updateUnplannedDetails();
   });
 });
+
+function updateUnplannedDetails() {
+  const selectedClassification = document.querySelector("input[name='classification']:checked")?.value;
+  const details = document.querySelector("[data-unplanned-details]");
+  if (!details) return;
+
+  const isUnplanned = selectedClassification === "Unplanned";
+  details.hidden = !isUnplanned;
+  details.querySelectorAll("select, textarea").forEach((field) => {
+    field.disabled = !isUnplanned;
+    field.required = isUnplanned;
+    if (!isUnplanned) field.value = "";
+  });
+}
+
+updateUnplannedDetails();
+
+const workshopSelect = requestForm?.querySelector("[name='workshop']");
+const productionLineSelect = requestForm?.querySelector("[name='production_line']");
+const productionLinesByWorkshop = {
+  "PLANT A": Array.from({ length: 14 }, (_, index) => `A${String(index + 1).padStart(2, "0")}`),
+  "PLANT B": Array.from({ length: 11 }, (_, index) => `B${String(index + 1).padStart(2, "0")}`),
+};
+
+function updateProductionLines() {
+  if (!workshopSelect || !productionLineSelect) return;
+
+  const lines = productionLinesByWorkshop[workshopSelect.value] || [];
+  productionLineSelect.innerHTML = "";
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  placeholder.textContent = "Select Line";
+  productionLineSelect.append(placeholder);
+
+  lines.forEach((line) => {
+    const option = document.createElement("option");
+    option.value = line;
+    option.textContent = line;
+    productionLineSelect.append(option);
+  });
+
+  productionLineSelect.disabled = lines.length === 0;
+}
+
+workshopSelect?.addEventListener("change", updateProductionLines);
+updateProductionLines();
 
 document.querySelectorAll(".language-switch").forEach((switcher) => {
   const buttons = [...switcher.querySelectorAll("button")];
@@ -116,6 +167,7 @@ document.querySelectorAll("[data-team-selector]").forEach((selector) => {
     });
 
     input.value = button.dataset.team;
+    selector.querySelector("[data-team]")?.setCustomValidity("");
   });
 });
 
@@ -124,8 +176,41 @@ document.querySelectorAll(".checkbox-grid input[type='checkbox']").forEach((chec
 
   checkbox.addEventListener("change", () => {
     checkbox.closest("label")?.classList.toggle("selected", checkbox.checked);
+    const group = checkbox.closest("[data-required-checkbox-group]");
+    group?.querySelector("input[type='checkbox']")?.setCustomValidity("");
   });
 });
+
+function validateRequestForm() {
+  if (!requestForm.reportValidity()) return false;
+
+  const teamGroup = requestForm.querySelector("[data-required-group]");
+  const selectedTeam = teamGroup?.querySelector("[data-team].selected");
+  const firstTeamButton = teamGroup?.querySelector("[data-team]");
+  if (teamGroup && !selectedTeam) {
+    firstTeamButton?.setCustomValidity("Select a responsible team.");
+    firstTeamButton?.focus();
+    firstTeamButton?.reportValidity();
+    showNotice("Select a responsible team.", "error");
+    return false;
+  }
+  firstTeamButton?.setCustomValidity("");
+
+  const roleGroup = requestForm.querySelector("[data-required-checkbox-group]");
+  const selectedRole = roleGroup?.querySelector("input[type='checkbox']:checked");
+  const firstRoleCheckbox = roleGroup?.querySelector("input[type='checkbox']");
+  if (roleGroup && !selectedRole) {
+    firstRoleCheckbox?.setCustomValidity("Select at least one responsible role.");
+    firstRoleCheckbox?.focus();
+    firstRoleCheckbox?.reportValidity();
+    showNotice("Select at least one responsible role.", "error");
+    return false;
+  }
+  firstRoleCheckbox?.setCustomValidity("");
+
+  return true;
+}
+
 
 document.querySelectorAll(".top-actions > .icon-button, .search-panel button").forEach((button) => {
   button.addEventListener("click", () => {
@@ -176,13 +261,16 @@ async function createRequest(formData) {
     classification: formData.get("classification"),
     time: formData.get("planned_start") || null,
     duration: Number(formData.get("planned_duration_minutes")),
-    tean: formData.get("responsible_group") || null,
+    team: formData.get("responsible_group") || null,
     role: formData.getAll("responsible_roles").join(", ") || null,
+    unplanned_category: formData.get("unplanned_category") || null,
+    unplanned_reason: formData.get("unplanned_reason") || null,
+    note: formData.get("note") || null,
   };
 
   if (!isSupabaseConfigured) {
     saveDraft(payload);
-    window.location.href = "index.html";
+    window.location.href = "changeover.html";
     return;
   }
 
@@ -204,7 +292,7 @@ async function createRequest(formData) {
 
   showNotice(`Request created successfully`);
   window.setTimeout(() => {
-    window.location.href = "index.html";
+    window.location.href = "changeover.html";
   }, 1200);
 }
 
@@ -250,7 +338,7 @@ function createRequestCard(request) {
   const planned = request.planned_duration_minutes ?? request.duration ?? "--";
   const started = formatDate(request.time || request.planned_start || request.created_at);
   const line = request.production_line || request.line || "--";
-  const group = request.tean || request.responsible_group || (request.type || "T").charAt(0);
+  const group = request.team || request.tean || request.responsible_group || (request.type || "T").charAt(0);
 
   return `
     <article class="request-card ${isCompleted ? "completed" : "internal"}">
@@ -338,3 +426,10 @@ function escapeHtml(value) {
     return entities[character];
   });
 }
+
+
+
+
+
+
+
