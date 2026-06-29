@@ -797,6 +797,7 @@ a.icon-button {
 }
 
 .request-card {
+  position: relative;
   overflow: hidden;
   min-height: 246px;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -835,13 +836,78 @@ a.icon-button {
 }
 
 .badges mark {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+}
+
+.status-submitted .badges mark {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+}
+
+.status-in-progress {
+  border-color: rgba(245, 158, 11, 0.62);
+  animation: in-progress-card-border 1.65s ease-in-out infinite;
+}
+
+.status-in-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.42);
+  animation: in-progress-card-ring 1.65s ease-in-out infinite;
+}
+
+.status-in-progress .badges mark {
+  position: relative;
+  overflow: hidden;
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.22);
+}
+
+.status-in-progress .badges mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+  transform: translateX(-120%);
+  animation: status-sweep 1.45s linear infinite;
+}
+
+.status-completed .badges mark {
   background: var(--green-soft);
   color: var(--green);
 }
 
-.internal .badges mark {
-  background: var(--amber-soft);
-  color: var(--amber);
+.status-cancelled .badges mark {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fb7185;
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.2);
+}
+
+@keyframes status-sweep {
+  to { transform: translateX(120%); }
+}
+
+@keyframes in-progress-card-border {
+  0%, 100% {
+    box-shadow: var(--shadow), 0 0 0 rgba(245, 158, 11, 0);
+  }
+  50% {
+    box-shadow: var(--shadow), 0 0 24px rgba(245, 158, 11, 0.32);
+  }
+}
+
+@keyframes in-progress-card-ring {
+  0%, 100% {
+    opacity: 0.36;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .request-card h2 {
@@ -903,51 +969,104 @@ a.icon-button {
   font-style: normal;
 }
 
-.request-card footer {
-  display: flex;
-  align-items: center;
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  min-height: 49px;
-  padding: 0 20px;
-  background: #1b1f27;
+  margin-top: 22px;
 }
 
-.request-card footer span {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: #1c355a;
-  color: #8ebcff;
-  font-size: 11px;
+.card-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: #f8fafc;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card-actions button svg {
+  width: 15px;
+}
+
+.complete-button {
+  background: rgba(16, 199, 132, 0.16);
+}
+
+.complete-button:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.delete-button {
+  background: rgba(248, 113, 113, 0.14);
+  color: #fecaca;
+}
+.request-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 29px 0 27px;
+  font-size: 20px;
+  line-height: 1.1;
   font-weight: 900;
 }
 
-.request-card footer strong {
+.request-card h2 svg {
+  width: 15px;
+  color: #7d8796;
+}
+
+.request-card h2 strong {
+  color: var(--green);
+}
+
+.request-card dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 0;
+}
+
+.request-card div {
   min-width: 0;
+}
+
+.request-card dt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #a2abb9;
+  font-size: 0;
+}
+
+.request-card dt svg {
+  width: 14px;
+  flex: 0 0 auto;
+}
+
+.request-card dd {
+  margin: 0;
   overflow: hidden;
+  color: #fff;
   font-size: 11px;
   font-weight: 900;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.request-card footer button {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  margin-left: auto;
-  border: 0;
-  background: transparent;
-  color: #8c96a5;
+.request-card em {
+  color: var(--green);
+  font-style: normal;
 }
 
-.request-card footer svg {
-  width: 17px;
-}
 
 .dashboard-page {
   min-height: 100vh;
@@ -1454,6 +1573,11 @@ a.icon-button {
     min-height: 112px;
   }
 }
+
+
+
+
+
 
 
 

@@ -6,7 +6,7 @@ const sampleRequests = [
   {
     id: "sample-1",
     type: "Line Changeover",
-    status: "Internal",
+    status: "Submitted",
     plant: "SAMHO",
     production_line: "Line A-01",
     from_model: "aa",
@@ -88,7 +88,7 @@ function updateUnplannedDetails() {
   details.hidden = !isUnplanned;
   details.querySelectorAll("select, textarea").forEach((field) => {
     field.disabled = !isUnplanned;
-    field.required = isUnplanned;
+    field.required = isUnplanned && field.matches("select");
     if (!isUnplanned) field.value = "";
   });
 }
@@ -222,7 +222,21 @@ searchInput?.addEventListener("input", () => {
   renderRequests(filterRequests(searchInput.value), { includeDrafts: false });
 });
 
+requestGrid?.addEventListener("click", async (event) => {
+  const actionButton = event.target.closest("[data-request-action]");
+  if (!actionButton) return;
+
+  const card = actionButton.closest("[data-request-id]");
+  const requestId = card?.dataset.requestId;
+  if (!requestId) return;
+
+  const action = actionButton.dataset.requestAction;
+  if (action === "complete") await completeRequest(requestId);
+  if (action === "delete") await deleteRequest(requestId);
+});
+
 loadRequests();
+window.setInterval(refreshTimedStatuses, 60000);
 
 async function loadRequests() {
   if (!requestGrid) return;
@@ -245,8 +259,9 @@ async function loadRequests() {
     return;
   }
 
-  loadedRequests = data || [];
+  loadedRequests = applyTimedStatuses(data || []);
   renderRequests(loadedRequests);
+  await syncTimedStatuses(loadedRequests, data || []);
 }
 
 async function createRequest(formData) {
@@ -259,6 +274,7 @@ async function createRequest(formData) {
     from_model: formData.get("from_model"),
     to_model: formData.get("to_model"),
     classification: formData.get("classification"),
+    status: "Submitted",
     time: formData.get("planned_start") || null,
     duration: Number(formData.get("planned_duration_minutes")),
     team: formData.get("responsible_group") || null,
@@ -331,8 +347,10 @@ function renderRequests(requests, options = {}) {
 }
 
 function createRequestCard(request) {
-  const status = request.status || "Internal";
-  const isCompleted = status.toLowerCase() === "completed";
+  const status = getTimedStatus(request);
+  const statusClass = status.toLowerCase().replace(/\s+/g, "-");
+  const isCompleted = status === "Completed";
+  const isCancelled = status === "Cancelled";
   const durationLabel = isCompleted ? "Actual" : "Target";
   const actual = request.actual_duration_minutes ?? "--";
   const planned = request.planned_duration_minutes ?? request.duration ?? "--";
@@ -341,11 +359,11 @@ function createRequestCard(request) {
   const group = request.team || request.tean || request.responsible_group || (request.type || "T").charAt(0);
 
   return `
-    <article class="request-card ${isCompleted ? "completed" : "internal"}">
+    <article class="request-card status-${statusClass}" data-request-id="${escapeHtml(request.id)}">
       <div class="card-content">
         <div class="badges">
           <span>${escapeHtml(request.process || request.type || "Changeover")}</span>
-          <mark>Status.${escapeHtml(status)}</mark>
+          <mark>${escapeHtml(status)}</mark>
         </div>
         <h2>${escapeHtml(request.from_model || "--")} <i data-lucide="chevron-right"></i> <strong>${escapeHtml(request.to_model || "--")}</strong></h2>
         <dl>
@@ -366,15 +384,152 @@ function createRequestCard(request) {
             <dd>${planned}m <em>/ ${actual === "--" ? "--" : `${actual}m`}</em></dd>
           </div>
         </dl>
+        <div class="card-actions" aria-label="Request actions">
+          <button class="delete-button" type="button" data-request-action="delete">
+            <i data-lucide="trash-2"></i>Delete
+          </button>
+          <button class="complete-button" type="button" data-request-action="complete" ${isCompleted || isCancelled ? "disabled" : ""}>
+            <i data-lucide="circle-check"></i>Complete
+          </button>
+        </div>
       </div>
-      <footer>
-        <span>${escapeHtml(String(group).charAt(0).toUpperCase())}</span>
-        <button aria-label="Open request"><i data-lucide="chevron-right"></i></button>
-      </footer>
     </article>
   `;
 }
 
+async function completeRequest(requestId) {
+  if (requestId.startsWith("draft-")) {
+    updateDraftRequest(requestId, { status: "Completed" });
+    showNotice("Draft marked completed.", "success");
+    refreshRequestGrid();
+    return;
+  }
+
+  if (!isSupabaseConfigured) return;
+
+  const { error } = await supabase
+    .from(CHANGEOVER_TABLE)
+    .update({ status: "Completed" })
+    .eq("id", requestId);
+
+  if (error) {
+    showNotice(formatSupabaseError(error), "error");
+    return;
+  }
+
+  loadedRequests = loadedRequests.map((request) =>
+    String(request.id) === String(requestId) ? { ...request, status: "Completed" } : request,
+  );
+  showNotice("Changeover completed.", "success");
+  refreshRequestGrid();
+}
+
+async function deleteRequest(requestId) {
+  if (!window.confirm("Delete this changeover request?")) return;
+
+  if (requestId.startsWith("draft-")) {
+    deleteDraftRequest(requestId);
+    showNotice("Draft deleted.", "success");
+    refreshRequestGrid();
+    return;
+  }
+
+  if (!isSupabaseConfigured) return;
+
+  const { error } = await supabase
+    .from(CHANGEOVER_TABLE)
+    .delete()
+    .eq("id", requestId);
+
+  if (error) {
+    showNotice(formatSupabaseError(error), "error");
+    return;
+  }
+
+  loadedRequests = loadedRequests.filter((request) => String(request.id) !== String(requestId));
+  showNotice("Changeover deleted.", "success");
+  refreshRequestGrid();
+}
+
+function updateDraftRequest(requestId, patch) {
+  const drafts = getDraftRequests().map((request) =>
+    request.id === requestId ? { ...request, ...patch } : request,
+  );
+  localStorage.setItem("smed_draft_requests", JSON.stringify(drafts));
+}
+
+function deleteDraftRequest(requestId) {
+  const drafts = getDraftRequests().filter((request) => request.id !== requestId);
+  localStorage.setItem("smed_draft_requests", JSON.stringify(drafts));
+}
+
+function refreshRequestGrid() {
+  const query = searchInput?.value || "";
+  renderRequests(query ? filterRequests(query) : loadedRequests);
+}
+
+async function refreshTimedStatuses() {
+  if (!requestGrid || loadedRequests.length === 0) return;
+
+  const previousRequests = loadedRequests;
+  const timedRequests = applyTimedStatuses(previousRequests);
+  const hasChanges = timedRequests.some((request, index) => request.status !== previousRequests[index]?.status);
+  if (!hasChanges) return;
+
+  loadedRequests = timedRequests;
+  refreshRequestGrid();
+  await syncTimedStatuses(timedRequests, previousRequests);
+}
+
+function getTimedStatus(request, now = new Date()) {
+  const status = normalizeStatus(request.status);
+  if (status === "Completed") return "Completed";
+
+  const startValue = request.time || request.planned_start;
+  const duration = Number(request.duration ?? request.planned_duration_minutes);
+  if (!startValue || !Number.isFinite(duration) || duration <= 0) return status;
+
+  const start = new Date(startValue);
+  if (Number.isNaN(start.getTime())) return status;
+
+  const end = new Date(start.getTime() + duration * 60 * 1000);
+  if (now < start) return "Submitted";
+  if (now <= end) return "In Progress";
+  return "Cancelled";
+}
+
+function applyTimedStatuses(requests) {
+  return requests.map((request) => ({ ...request, status: getTimedStatus(request) }));
+}
+
+async function syncTimedStatuses(timedRequests, originalRequests) {
+  if (!isSupabaseConfigured) return;
+
+  const updates = timedRequests.filter((request) => {
+    const original = originalRequests.find((item) => String(item.id) === String(request.id));
+    return original && normalizeStatus(original.status) !== request.status;
+  });
+
+  const results = await Promise.all(updates.map((request) =>
+    supabase
+      .from(CHANGEOVER_TABLE)
+      .update({ status: request.status })
+      .eq("id", request.id),
+  ));
+
+  const failedUpdate = results.find((result) => result.error);
+  if (failedUpdate) {
+    showNotice(formatSupabaseError(failedUpdate.error), "error");
+  }
+}
+
+function normalizeStatus(status) {
+  const normalized = String(status || "Submitted").trim().toLowerCase();
+  if (["in progress", "in-progress", "progress", "processing"].includes(normalized)) return "In Progress";
+  if (["completed", "complete", "done"].includes(normalized)) return "Completed";
+  if (["cancelled", "canceled", "cancel"].includes(normalized)) return "Cancelled";
+  return "Submitted";
+}
 function filterRequests(query) {
   const normalizedQuery = query.trim().toLowerCase();
   const searchableRequests = [...getDraftRequests(), ...loadedRequests];
@@ -426,6 +581,12 @@ function escapeHtml(value) {
     return entities[character];
   });
 }
+
+
+
+
+
+
 
 
 

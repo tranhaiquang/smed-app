@@ -8,6 +8,7 @@
   from_model text,
   to_model text,
   classification text,
+  status text default 'Submitted',
   time timestamp,
   duration int2,
   team text,
@@ -18,6 +19,7 @@
 );
 
 alter table public.changeover_records
+  add column if not exists status text default 'Submitted',
   add column if not exists team text,
   add column if not exists unplanned_category text,
   add column if not exists unplanned_reason text,
@@ -57,3 +59,23 @@ create policy "Allow anon insert changeover records"
   to anon
   with check (true);
 
+
+
+drop policy if exists "Allow anon update changeover records"
+  on public.changeover_records;
+
+create policy "Allow anon update changeover records"
+  on public.changeover_records
+  for update
+  to anon
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow anon delete changeover records"
+  on public.changeover_records;
+
+create policy "Allow anon delete changeover records"
+  on public.changeover_records
+  for delete
+  to anon
+  using (true);
