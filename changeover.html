@@ -29,33 +29,9 @@
             <i data-lucide="layout-dashboard"></i>
             Dashboard
           </a>
-          <a href="#">
-            <i data-lucide="activity"></i>
-            Live Monitor
-          </a>
-          <a href="#">
-            <i data-lucide="circle-check"></i>
-            My Tasks
-          </a>
           <a class="active" href="#">
             <i data-lucide="clipboard-list"></i>
             Changeovers
-          </a>
-          <a href="#">
-            <i data-lucide="chart-no-axes-combined"></i>
-            Analytics
-          </a>
-          <a href="#">
-            <i data-lucide="book-open"></i>
-            Templates
-          </a>
-          <a href="#">
-            <i data-lucide="wrench"></i>
-            Maintenance
-          </a>
-          <a href="#">
-            <i data-lucide="database"></i>
-            Data Control
           </a>
         </nav>
 
@@ -85,9 +61,6 @@
             <button class="icon-button" aria-label="Toggle theme">
               <i data-lucide="sun"></i>
             </button>
-            <button class="icon-button" aria-label="Notifications">
-              <i data-lucide="bell"></i>
-            </button>
             <div class="profile">
               <span><i data-lucide="user-round"></i></span>
               <div>
@@ -105,11 +78,7 @@
           </div>
 
           <div class="view-actions">
-            <div class="view-toggle" aria-label="View options">
-              <button class="selected" aria-label="Grid view"><i data-lucide="layout-grid"></i></button>
-              <button aria-label="List view"><i data-lucide="list"></i></button>
-            </div>
-            <button class="secondary-button"><i data-lucide="layers-3"></i>Bulk Add</button>
+            
             <a class="primary-button" href="new-request.html"><i data-lucide="plus"></i>New Request</a>
           </div>
         </section>
@@ -119,7 +88,43 @@
             <i data-lucide="search"></i>
             <input type="search" placeholder="Search by model or line..." data-request-search />
           </label>
-          <button type="button" aria-label="Search filters"><i data-lucide="funnel"></i>Filters</button>
+          <button type="button" aria-label="Search filters" data-filter-toggle><i data-lucide="funnel"></i>Filters</button>
+          <div class="filter-panel" data-filter-panel hidden>
+            <label>
+              <span>Status</span>
+              <select data-filter-status>
+                <option value="">All Statuses</option>
+                <option value="Submitted">Submitted</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </label>
+            <label>
+              <span>Classification</span>
+              <select data-filter-classification>
+                <option value="">All Classifications</option>
+                <option value="Planned">Planned</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Unplanned">Unplanned</option>
+              </select>
+            </label>
+            <label>
+              <span>Process</span>
+              <select data-filter-process>
+                <option value="">All Processes</option>
+                <option value="Line Changeover">Line Changeover</option>
+                <option value="Mold Changeover">Mold Changeover</option>
+              </select>
+            </label>
+            <label>
+              <span>Line</span>
+              <select data-filter-line>
+                <option value="">All Lines</option>
+              </select>
+            </label>
+            <button type="button" class="secondary-button" data-filter-clear><i data-lucide="rotate-ccw"></i>Clear</button>
+          </div>
         </section>
 
         <section class="cards-grid" aria-label="Changeover request cards" data-request-grid></section>
@@ -130,4 +135,3 @@
     <script type="module" src="script.js"></script>
   </body>
 </html>
-
