@@ -772,7 +772,7 @@ async function createRequest(formData) {
     status: "Submitted",
     time: formData.get("planned_start") || null,
     duration: Number(formData.get("planned_duration_minutes")),
-    actual_duration: null,
+    actual_duration: 1,
     team: formData.get("responsible_group") || null,
     role: formData.getAll("responsible_roles").join(", ") || null,
     unplanned_category: formData.get("unplanned_category") || null,
@@ -824,9 +824,8 @@ function getDraftRequests() {
 
 function removeEmptyRecordValues(payload) {
   return Object.fromEntries(
-    Object.entries(payload).filter(([key, value]) => {
+    Object.entries(payload).filter(([, value]) => {
       if (Array.isArray(value)) return value.length > 0;
-      if (key === "actual_duration") return value !== "" && value !== undefined;
       return value !== "" && value !== null && value !== undefined;
     }),
   );
@@ -1037,7 +1036,6 @@ function applyTimedStatuses(requests) {
     return {
       ...request,
       status,
-      ...(status === "Cancelled" ? { actual_duration: 0 } : {}),
     };
   });
 }
@@ -1049,9 +1047,7 @@ async function syncTimedStatuses(timedRequests, originalRequests) {
     const original = originalRequests.find((item) => String(item.id) === String(request.id));
     if (!original) return false;
 
-    const statusChanged = normalizeStatus(original.status) !== request.status;
-    const needsCancelledActualDuration = request.status === "Cancelled" && getActualDuration(original) !== 0;
-    return statusChanged || needsCancelledActualDuration;
+    return normalizeStatus(original.status) !== request.status;
   });
 
   const results = await Promise.all(updates.map((request) =>
@@ -1059,7 +1055,6 @@ async function syncTimedStatuses(timedRequests, originalRequests) {
       .from(CHANGEOVER_TABLE)
       .update({
         status: request.status,
-        ...(request.status === "Cancelled" ? { actual_duration: 0 } : {}),
       })
       .eq("id", request.id)
       .select("id"),
@@ -1070,7 +1065,7 @@ async function syncTimedStatuses(timedRequests, originalRequests) {
     showNotice(
       failedUpdate.error
         ? formatSupabaseError(failedUpdate.error, "update")
-        : "Supabase did not update timed status or actual_duration. Check the update policy for changeover_records.",
+        : "Supabase did not update timed status. Check the update policy for changeover_records.",
       "error",
     );
   }
@@ -1089,9 +1084,12 @@ function getPlannedDuration(request = {}) {
 }
 
 function getActualDuration(request = {}, status = normalizeStatus(request.status)) {
+  if (status === "Cancelled") return 0;
+  if (status !== "Completed") return "--";
+
   if (request.actual_duration !== null && request.actual_duration !== undefined) return request.actual_duration;
   if (request.actual_duration_minutes !== null && request.actual_duration_minutes !== undefined) return request.actual_duration_minutes;
-  return status === "Cancelled" ? 0 : "--";
+  return "--";
 }
 
 function calculateActualDuration(request = {}, now = new Date()) {
@@ -1101,7 +1099,7 @@ function calculateActualDuration(request = {}, now = new Date()) {
   const start = new Date(startValue);
   if (Number.isNaN(start.getTime())) return 0;
 
-  return Math.max(0, Math.round((now.getTime() - start.getTime()) / 60000));
+  return Math.max(1, Math.round((now.getTime() - start.getTime()) / 60000));
 }
 
 function hasRequestStarted(request = {}, now = new Date()) {
