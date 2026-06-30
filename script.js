@@ -592,7 +592,7 @@ function renderDashboard(records) {
   const todayRecords = allRecords.filter((record) => formatDateKey(getRecordDate(record)) === today);
   const completed = allRecords.filter((record) => normalizeStatus(record.status) === "Completed");
   const pending = allRecords.filter((record) => ["Submitted", "In Progress"].includes(normalizeStatus(record.status)));
-  const avgDuration = average(allRecords.map((record) => Number(record.duration ?? record.planned_duration_minutes)).filter(Number.isFinite));
+  const avgDuration = average(allRecords.map((record) => Number(getActualDuration(record))).filter(Number.isFinite));
   const targetToday = 20;
   const durationGoal = 25;
 
@@ -785,6 +785,7 @@ function renderRequests(requests, options = {}) {
 function createRequestCard(request) {
   const status = getTimedStatus(request);
   const statusClass = status.toLowerCase().replace(/\s+/g, "-");
+  const isCompleted = status === "Completed";
   const isScheduledForFuture = !hasRequestStarted(request);
   const actual = getActualDuration(request, status);
   const planned = getPlannedDuration(request);
@@ -822,7 +823,7 @@ function createRequestCard(request) {
           <button class="delete-button" type="button" data-request-action="delete">
             <i data-lucide="trash-2"></i>${translate("delete")}
           </button>
-          <button class="complete-button" type="button" data-request-action="complete" ${isScheduledForFuture ? "disabled" : ""}>
+          <button class="complete-button" type="button" data-request-action="complete" ${isScheduledForFuture || isCompleted ? "disabled" : ""}>
             <i data-lucide="circle-check"></i>${translate("complete")}
           </button>
         </div>
@@ -854,18 +855,27 @@ async function completeRequest(requestId) {
 
   const actualDuration = calculateActualDuration(request);
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(CHANGEOVER_TABLE)
     .update({ status: "Completed", actual_duration: actualDuration })
-    .eq("id", requestId);
+    .eq("id", requestId)
+    .select("id, status, actual_duration")
+    .maybeSingle();
 
   if (error) {
-    showNotice(formatSupabaseError(error), "error");
+    showNotice(formatSupabaseError(error, "update"), "error");
+    return;
+  }
+
+  if (!data) {
+    showNotice("Supabase did not update actual_duration. Check the update policy for changeover_records.", "error");
     return;
   }
 
   loadedRequests = loadedRequests.map((request) =>
-    String(request.id) === String(requestId) ? { ...request, status: "Completed", actual_duration: actualDuration } : request,
+    String(request.id) === String(requestId)
+      ? { ...request, status: data.status || "Completed", actual_duration: data.actual_duration ?? actualDuration }
+      : request,
   );
   showNotice("Changeover completed.", "success");
   refreshRequestGrid();
@@ -990,12 +1000,18 @@ async function syncTimedStatuses(timedRequests, originalRequests) {
         status: request.status,
         ...(request.status === "Cancelled" ? { actual_duration: 0 } : {}),
       })
-      .eq("id", request.id),
+      .eq("id", request.id)
+      .select("id"),
   ));
 
-  const failedUpdate = results.find((result) => result.error);
+  const failedUpdate = results.find((result) => result.error || !result.data?.length);
   if (failedUpdate) {
-    showNotice(formatSupabaseError(failedUpdate.error), "error");
+    showNotice(
+      failedUpdate.error
+        ? formatSupabaseError(failedUpdate.error, "update")
+        : "Supabase did not update timed status or actual_duration. Check the update policy for changeover_records.",
+      "error",
+    );
   }
 }
 

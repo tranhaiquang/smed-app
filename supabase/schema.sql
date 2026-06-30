@@ -11,6 +11,7 @@
   status text default 'Submitted',
   time timestamp,
   duration int2,
+  actual_duration int2,
   team text,
   role text,
   unplanned_category text,
@@ -20,6 +21,7 @@
 
 alter table public.changeover_records
   add column if not exists status text default 'Submitted',
+  add column if not exists actual_duration int2,
   add column if not exists team text,
   add column if not exists unplanned_category text,
   add column if not exists unplanned_reason text,
