@@ -61,7 +61,7 @@ const translations = {
     rate: "rate",
     inProgress: "In Progress",
     inProcess: "In process",
-    performanceTrend: "7-Day Performance Trend",
+    performanceTrend: "7 Working-Day Performance Trend",
     smedCaption: "Every second counts in the Single-Minute Exchange of Die (SMED).",
     statusDistribution: "Status Distribution",
     total: "Total",
@@ -137,7 +137,7 @@ const translations = {
     rate: "tỷ lệ",
     inProgress: "Đang thực hiện",
     inProcess: "đang xử lý",
-    performanceTrend: "Xu hướng 7 ngày",
+    performanceTrend: "Xu hướng 7 ngày làm việc",
     smedCaption: "Từng giây đều quan trọng trong SMED.",
     statusDistribution: "Phân bổ trạng thái",
     total: "Tổng",
@@ -213,7 +213,7 @@ const translations = {
     rate: "비율",
     inProgress: "진행 중",
     inProcess: "진행 중",
-    performanceTrend: "7일 성과 추세",
+    performanceTrend: "7 근무일 성과 추세",
     smedCaption: "SMED에서는 매초가 중요합니다.",
     statusDistribution: "상태 분포",
     total: "합계",
@@ -292,18 +292,34 @@ const filterInputs = {
 let loadedRequests = [];
 let loadedDashboardRecords = [];
 
-const savedTheme = localStorage.getItem("smed_theme") || "dark";
-const savedLanguage = localStorage.getItem("smed_language") || "EN";
-applyTheme(savedTheme, { persist: false });
-applyLanguage(savedLanguage, { persist: false, rerender: false });
-window.lucide?.createIcons();
-
 const mobileButton = document.querySelector(".mobile-menu");
 const sidebar = document.querySelector(".sidebar");
 
+function setMobileSidebarOpen(isOpen) {
+  sidebar?.classList.toggle("open", isOpen);
+  document.body.classList.toggle("sidebar-open", isOpen);
+  mobileButton?.classList.toggle("selected", isOpen);
+  mobileButton?.setAttribute("aria-expanded", String(isOpen));
+}
+
+mobileButton?.setAttribute("aria-expanded", "false");
+
 mobileButton?.addEventListener("click", () => {
-  sidebar.classList.toggle("open");
-  mobileButton.classList.toggle("selected", sidebar.classList.contains("open"));
+  setMobileSidebarOpen(!sidebar?.classList.contains("open"));
+});
+
+sidebar?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => setMobileSidebarOpen(false));
+});
+
+document.addEventListener("click", (event) => {
+  if (!sidebar?.classList.contains("open")) return;
+  if (sidebar.contains(event.target) || mobileButton?.contains(event.target)) return;
+  setMobileSidebarOpen(false);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setMobileSidebarOpen(false);
 });
 
 requestForm?.addEventListener("submit", async (event) => {
@@ -361,7 +377,7 @@ function updateProductionLines() {
   placeholder.value = "";
   placeholder.disabled = true;
   placeholder.selected = true;
-  placeholder.textContent = translate("selectLine");
+  placeholder.textContent = workshopSelect.value ? translate("selectLine") : translate("selectWorkshopFirst");
   productionLineSelect.append(placeholder);
 
   lines.forEach((line) => {
@@ -376,6 +392,12 @@ function updateProductionLines() {
 
 workshopSelect?.addEventListener("change", updateProductionLines);
 updateProductionLines();
+
+const savedTheme = localStorage.getItem("smed_theme") || "dark";
+const savedLanguage = localStorage.getItem("smed_language") || "EN";
+applyTheme(savedTheme, { persist: false });
+applyLanguage(savedLanguage, { persist: false, rerender: false });
+window.lucide?.createIcons();
 
 [fromModelSelect, toModelSelect].forEach((select) => {
   select?.addEventListener("change", validateModelTransition);
@@ -660,15 +682,11 @@ function renderTrendChart(records) {
   const chart = document.querySelector("[data-trend-chart]");
   if (!chart) return;
 
-  const days = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - index));
-    return {
-      key: formatDateKey(date),
-      label: new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date),
-      count: 0,
-    };
-  });
+  const days = getRecentNonSundayDays(7).map((date) => ({
+    key: formatDateKey(date),
+    label: new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date),
+    count: 0,
+  }));
 
   records.forEach((record) => {
     const key = formatDateKey(getRecordDate(record));
@@ -1373,6 +1391,20 @@ function percentDelta(value, baseline) {
 function average(values) {
   if (!values.length) return 0;
   return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function getRecentNonSundayDays(dayCount) {
+  const days = [];
+  const date = new Date();
+
+  while (days.length < dayCount) {
+    if (date.getDay() !== 0) {
+      days.unshift(new Date(date));
+    }
+    date.setDate(date.getDate() - 1);
+  }
+
+  return days;
 }
 
 function getRecordDate(record) {
