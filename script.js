@@ -82,11 +82,17 @@ const translations = {
     unplanned: "Unplanned",
     process: "Process",
     allProcesses: "All Processes",
+    stitching: "STITCHING",
     lineChangeover: "Line Changeover",
     moldChangeover: "Mold Changeover",
     line: "Line",
     allLines: "All Lines",
     clear: "Clear",
+    noRequestsFound: "No changeover requests found.",
+    selectModel: "Select Model",
+    selectLine: "Select Line",
+    selectWorkshopFirst: "Select Workshop First",
+    filterAria: "Search filters",
     createRequestSubtitle: "Create a structured changeover request",
     newChangeoverRequest: "New Changeover Request",
     formIntro: "Set up the process, model transition, timing, and responsibility groups.",
@@ -118,7 +124,7 @@ const translations = {
   VI: {
     mainMenu: "Menu chính",
     dashboard: "Bảng điều khiển",
-    changeovers: "Đổi chuyền",
+    changeovers: "Chuyển đổi",
     adminRole: "Quản trị viên",
     executiveAnalytics: "Phân tích điều hành",
     executiveSubtitle: "Chỉ số hiệu suất và xu hướng tổng quan",
@@ -135,7 +141,7 @@ const translations = {
     smedCaption: "Từng giây đều quan trọng trong SMED.",
     statusDistribution: "Phân bổ trạng thái",
     total: "Tổng",
-    changeoverRequests: "Yêu cầu đổi chuyền",
+    changeoverRequests: "Yêu cầu chuyển đổi",
     manageSmed: "Quản lý và theo dõi hoạt động SMED",
     bulkAdd: "Thêm hàng loạt",
     newRequest: "Yêu cầu mới",
@@ -152,15 +158,21 @@ const translations = {
     unplanned: "Ngoài kế hoạch",
     process: "Công đoạn",
     allProcesses: "Tất cả công đoạn",
-    lineChangeover: "Đổi chuyền",
-    moldChangeover: "Đổi khuôn",
+    stitching: "STITCHING",
+    lineChangeover: "Chuyển đổi line",
+    moldChangeover: "Chuyển đổi khuôn",
     line: "Line",
     allLines: "Tất cả line",
     clear: "Xóa lọc",
-    createRequestSubtitle: "Tạo yêu cầu đổi chuyền có cấu trúc",
-    newChangeoverRequest: "Yêu cầu đổi chuyền mới",
-    formIntro: "Thiết lập quy trình, model, thời gian và nhóm phụ trách.",
-    changeoverType: "Loại đổi chuyền",
+    noRequestsFound: "Không tìm thấy yêu cầu chuyển đổi.",
+    selectModel: "Chọn model",
+    selectLine: "Chọn line",
+    selectWorkshopFirst: "Chọn xưởng trước",
+    filterAria: "Bộ lọc tìm kiếm",
+    createRequestSubtitle: "Tạo yêu cầu chuyển đổi có cấu trúc",
+    newChangeoverRequest: "Yêu cầu chuyển đổi mới",
+    formIntro: "Thiết lập quy trình, model, thời gian và vai trò phụ trách.",
+    changeoverType: "Loại chuyển đổi",
     machine: "Máy móc",
     locationUnit: "Vị trí & đơn vị",
     plant: "Nhà máy",
@@ -176,7 +188,7 @@ const translations = {
     responsibleRoles: "Vai trò phụ trách",
     notes: "Ghi chú",
     requestNotes: "Ghi chú yêu cầu",
-    notePlaceholder: "Thêm chi tiết đổi chuyền, ràng buộc hoặc ghi chú chuẩn bị",
+    notePlaceholder: "Thêm chi tiết chuyển đổi, ràng buộc hoặc ghi chú chuẩn bị",
     cancel: "Hủy",
     createRequest: "Tạo yêu cầu",
     complete: "Hoàn thành",
@@ -222,11 +234,17 @@ const translations = {
     unplanned: "비계획",
     process: "공정",
     allProcesses: "전체 공정",
+    stitching: "STITCHING",
     lineChangeover: "라인 체인지오버",
     moldChangeover: "금형 교체",
     line: "라인",
     allLines: "전체 라인",
     clear: "초기화",
+    noRequestsFound: "체인지오버 요청을 찾을 수 없습니다.",
+    selectModel: "모델 선택",
+    selectLine: "라인 선택",
+    selectWorkshopFirst: "작업장을 먼저 선택",
+    filterAria: "검색 필터",
     createRequestSubtitle: "구조화된 체인지오버 요청 생성",
     newChangeoverRequest: "새 체인지오버 요청",
     formIntro: "공정, 모델 전환, 일정 및 담당 그룹을 설정합니다.",
@@ -327,6 +345,7 @@ const workshopSelect = requestForm?.querySelector("[name='workshop']");
 const productionLineSelect = requestForm?.querySelector("[name='production_line']");
 const fromModelSelect = requestForm?.querySelector("[name='from_model']");
 const toModelSelect = requestForm?.querySelector("[name='to_model']");
+const plannedStartInput = requestForm?.querySelector("[name='planned_start']");
 const productionLinesByWorkshop = {
   "PLANT A": Array.from({ length: 14 }, (_, index) => `A${String(index + 1).padStart(2, "0")}`),
   "PLANT B": Array.from({ length: 11 }, (_, index) => `B${String(index + 1).padStart(2, "0")}`),
@@ -342,7 +361,7 @@ function updateProductionLines() {
   placeholder.value = "";
   placeholder.disabled = true;
   placeholder.selected = true;
-  placeholder.textContent = "Select Line";
+  placeholder.textContent = translate("selectLine");
   productionLineSelect.append(placeholder);
 
   lines.forEach((line) => {
@@ -361,6 +380,9 @@ updateProductionLines();
 [fromModelSelect, toModelSelect].forEach((select) => {
   select?.addEventListener("change", validateModelTransition);
 });
+
+plannedStartInput?.addEventListener("change", validatePlannedStart);
+plannedStartInput?.addEventListener("input", validatePlannedStart);
 
 document.querySelectorAll(".language-switch").forEach((switcher) => {
   const buttons = [...switcher.querySelectorAll("button")];
@@ -433,8 +455,9 @@ document.querySelectorAll(".checkbox-grid input[type='checkbox']").forEach((chec
 });
 
 function validateRequestForm() {
-  if (!requestForm.reportValidity()) return false;
   if (!validateModelTransition({ report: true })) return false;
+  if (!validatePlannedStart({ report: true })) return false;
+  if (!requestForm.reportValidity()) return false;
 
   const teamGroup = requestForm.querySelector("[data-required-group]");
   const selectedTeam = teamGroup?.querySelector("[data-team].selected");
@@ -472,14 +495,34 @@ function validateModelTransition(options = {}) {
     fromModelSelect.value === toModelSelect.value;
   const message = hasSameModel ? "From Model and To Model cannot be the same." : "";
 
+  fromModelSelect.setCustomValidity(message);
   toModelSelect.setCustomValidity(message);
 
   if (hasSameModel && options.report) {
-    toModelSelect.reportValidity();
+    (document.activeElement === fromModelSelect ? fromModelSelect : toModelSelect).reportValidity();
     showNotice(message, "error");
   }
 
   return !hasSameModel;
+}
+
+function validatePlannedStart(options = {}) {
+  if (!plannedStartInput) return true;
+
+  const start = new Date(plannedStartInput.value);
+  const now = new Date();
+  now.setSeconds(0, 0);
+  const isPastTime = plannedStartInput.value && !Number.isNaN(start.getTime()) && start < now;
+  const message = isPastTime ? "Planned start time cannot be in the past." : "";
+
+  plannedStartInput.setCustomValidity(message);
+
+  if (isPastTime && options.report) {
+    plannedStartInput.reportValidity();
+    showNotice(message, "error");
+  }
+
+  return !isPastTime;
 }
 
 
@@ -622,7 +665,7 @@ function renderTrendChart(records) {
     date.setDate(date.getDate() - (6 - index));
     return {
       key: formatDateKey(date),
-      label: new Intl.DateTimeFormat("en", { weekday: "short" }).format(date),
+      label: new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date),
       count: 0,
     };
   });
@@ -777,7 +820,7 @@ function renderRequests(requests, options = {}) {
 
   requestGrid.innerHTML =
     allRequests.map((request) => createRequestCard(request)).join("") ||
-    `<p class="empty-state">No changeover requests found.</p>`;
+    `<p class="empty-state">${escapeHtml(translate("noRequestsFound"))}</p>`;
 
   window.lucide?.createIcons();
 }
@@ -1070,7 +1113,7 @@ function filterRequests(query) {
       .some((value) => String(value).toLowerCase().includes(normalizedQuery));
     const matchesStatus = !filters.status || normalizeStatus(request.status) === filters.status;
     const matchesClassification = !filters.classification || request.classification === filters.classification;
-    const matchesProcess = !filters.process || request.process === filters.process;
+    const matchesProcess = !filters.process || String(request.process || "").toLowerCase() === filters.process.toLowerCase();
     const matchesLine = !filters.line || (request.production_line || request.line) === filters.line;
 
     return matchesQuery && matchesStatus && matchesClassification && matchesProcess && matchesLine;
@@ -1209,11 +1252,11 @@ function translateFilters() {
   });
   setSelectText("[data-filter-process]", {
     "": translate("allProcesses"),
-    "Line Changeover": translate("lineChangeover"),
-    "Mold Changeover": translate("moldChangeover"),
+    STITCHING: translate("stitching"),
   });
   setSelectText("[data-filter-line]", { "": translate("allLines") });
   setButtonText("[data-filter-clear]", "rotate-ccw", translate("clear"));
+  filterToggle?.setAttribute("aria-label", translate("filterAria"));
 }
 
 function translateRequestForm() {
@@ -1238,10 +1281,14 @@ function translateRequestForm() {
   setHeadingWithIcon(".form-card:nth-of-type(5) h3", "clock-4", translate("scheduleResponsibility"));
   setTextAll(".form-card:nth-of-type(5) .form-grid label:nth-child(1) span", translate("plannedStartTime"));
   setTextAll(".form-card:nth-of-type(5) .form-grid label:nth-child(2) span", translate("plannedDuration"));
-  setTextAll(".form-card:nth-of-type(5) .group-field:nth-of-type(1) > span", translate("responsibleTeams"));
-  setTextAll(".form-card:nth-of-type(5) .group-field:nth-of-type(2) > span", translate("responsibleRoles"));
+  setTextAll(".form-card:nth-of-type(5) .group-field:nth-of-type(1) > span", translate("responsibleRoles"));
   setHeadingWithIcon(".form-card:nth-of-type(6) h3", "notebook-pen", translate("notes"));
   setTextAll(".form-card:nth-of-type(6) label span", translate("requestNotes"));
+  setSelectText("select[name='from_model']", { "": translate("selectModel") });
+  setSelectText("select[name='to_model']", { "": translate("selectModel") });
+  setSelectText("select[name='production_line']", {
+    "": productionLineSelect?.disabled ? translate("selectWorkshopFirst") : translate("selectLine"),
+  });
   setPlaceholder("textarea[name='note']", translate("notePlaceholder"));
   setLinkButtonText('.form-actions a[href="changeover.html"]', null, translate("cancel"));
   setButtonText(".form-actions button[type='submit']", "send", translate("createRequest"));
@@ -1344,12 +1391,21 @@ function formatDateKey(date) {
 
 function formatDate(value) {
   if (!value) return "--";
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(getDateLocale(), {
     month: "short",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function getDateLocale() {
+  const language = document.documentElement.dataset.language || "EN";
+  return {
+    EN: "en",
+    VI: "vi-VN",
+    KO: "ko-KR",
+  }[language] || "en";
 }
 
 function showNotice(message, type = "info") {
