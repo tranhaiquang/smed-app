@@ -1,0 +1,274 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIETNAM SAMHO | SMED | LEAN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark">S</div>
+          <div>
+            <strong>SAMHO</strong>
+            <span>SMED HUB</span>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <p>Main Menu</p>
+          <a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+          <a class="active" href="changeover.html"><i data-lucide="clipboard-list"></i>Changeovers</a>
+          <a href="checklist.html"><i data-lucide="clipboard-check"></i>Checklist</a>
+        </nav>
+
+        <div class="user-card">
+          <div class="avatar"><i data-lucide="user-round"></i></div>
+          <div>
+            <strong>Admin</strong>
+            <span>Roles.Administrator</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace request-mode">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <span class="section-label">Changeovers</span>
+
+          <div class="top-actions">
+            <div class="language-switch" aria-label="Language selector">
+              <i data-lucide="globe-2"></i>
+              <button>VI</button>
+              <button>EN</button>
+              <button>KO</button>
+            </div>
+            <button class="icon-button" aria-label="Toggle theme">
+              <i data-lucide="sun"></i>
+            </button>
+            <div class="profile">
+              <span><i data-lucide="user-round"></i></span>
+              <div>
+                <strong>Admin</strong>
+                <small>Administrator</small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="page-head">
+          <div>
+            <h1>New Request</h1>
+            <p>Create a structured changeover request</p>
+          </div>
+        </section>
+
+        <section class="request-view" aria-label="Create changeover request">
+          <div class="request-shell">
+            <div class="form-header">
+              <a class="icon-button" href="changeover.html" aria-label="Back to changeovers">
+                <i data-lucide="arrow-left"></i>
+              </a>
+              <div>
+                <h2>New Changeover Request</h2>
+                <p>Set up the process, model transition, timing, and responsibility groups.</p>
+              </div>
+            </div>
+
+            <form class="request-form">
+              <section class="form-card">
+                <h3>Changeover Type</h3>
+                <div class="segmented-control">
+                  <label class="selected">
+                    <input type="radio" name="type" value="Process" checked required />
+                    <i data-lucide="folder-cog"></i>
+                    Process
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="map-pin"></i>Location & Unit</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>Plant</span>
+                    <select name="plant" required>
+                      <option value="" disabled selected>Select Plant</option>
+                      <option>SAMHO</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Workshop</span>
+                    <select name="workshop" required>
+                      <option value="" disabled selected>Select Workshop</option>
+                      <option>PLANT A</option>
+                      <option>PLANT B</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Process</span>
+                    <select name="process" required>
+                      <option value="" disabled selected>Select Process</option>
+                      <option>HF</option>
+                      <option>Silk Screen</option>
+                      <option>Autocut</option>
+                      <option>SEMI Cut</option>
+                      <option>GBOS Cut</option>
+                      <option>Atom Cut</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Production Line</span>
+                    <select name="production_line" required disabled>
+                      <option value="" disabled selected>Select Workshop First</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="shuffle"></i>Model Transition</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>From Model</span>
+                    <select name="from_model" required>
+                      <option value="">Select Model</option>
+                      <option>GKFCY</option>
+                      <option>GR740</option>
+                      <option>GT/PTRVL V4</option>
+                      <option>IZ740</option>
+                      <option>MW860 V15</option>
+                      <option>MW880 V15</option>
+                      <option>MW880G V15 GTX</option>
+                      <option>MWTHIER V9</option>
+                      <option>MWTHIG V9 GTX</option>
+                      <option>MWTHIMC V9 GTX</option>
+                      <option>MWTGMG V2 GTX</option>
+                      <option>PTFCY</option>
+                      <option>PZ740</option>
+                      <option>U2010X GTX</option>
+                      <option>U740 V2</option>
+                      <option>UJMP</option>
+                      <option>ULDELR V3</option>
+                      <option>UMDELRS V3</option>
+                      <option>UN770</option>
+                      <option>USDELS V3</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>To Model</span>
+                    <select name="to_model" required>
+                      <option value="">Select Model</option>
+                      <option>GKFCY</option>
+                      <option>GR740</option>
+                      <option>GT/PTRVL V4</option>
+                      <option>IZ740</option>
+                      <option>MW860 V15</option>
+                      <option>MW880 V15</option>
+                      <option>MW880G V15 GTX</option>
+                      <option>MWTHIER V9</option>
+                      <option>MWTHIG V9 GTX</option>
+                      <option>MWTHIMC V9 GTX</option>
+                      <option>MWTGMG V2 GTX</option>
+                      <option>PTFCY</option>
+                      <option>PZ740</option>
+                      <option>U2010X GTX</option>
+                      <option>U740 V2</option>
+                      <option>UJMP</option>
+                      <option>ULDELR V3</option>
+                      <option>UMDELRS V3</option>
+                      <option>UN770</option>
+                      <option>USDELS V3</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="circle-dot"></i>Classification</h3>
+                <div class="segmented-control" data-classification-control>
+                  <label class="selected">
+                    <input type="radio" name="classification" value="Planned" checked required />
+                    Planned
+                  </label>
+                  <label>
+                    <input type="radio" name="classification" value="Unplanned" required />
+                    Unplanned
+                  </label>
+                </div>
+
+                <div class="unplanned-details" data-unplanned-details hidden>
+                  <label>
+                    <span>Reason Category</span>
+                    <select name="unplanned_category" disabled required>
+                      <option value="">Select Category</option>
+                      <option>Material Shortage</option>
+                      <option>Machine Breakdown</option>
+                      <option>Quality Issue</option>
+                      <option>Manpower Issue</option>
+                      <option>Schedule Change</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Detailed Reason</span>
+                    <textarea name="unplanned_reason" placeholder="Provide more details about why this changeover is unplanned..." disabled></textarea>
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="clock-4"></i>Schedule & Responsibility</h3>
+                <div class="form-grid">
+                  <label>
+                    <span>Planned Start Time</span>
+                    <input type="datetime-local" name="planned_start" required />
+                  </label>
+                  <label>
+                    <span>Planned Duration (Minutes)</span>
+                    <input type="number" name="planned_duration_minutes" value="60" min="1" required />
+                  </label>
+                </div>
+
+                <div class="group-field">
+                  <span>Responsible Roles (Legacy)</span>
+                  <div class="checkbox-grid" data-required-checkbox-group="Responsible role">
+                    <label><input type="checkbox" name="responsible_roles" value="Administrator" />Administrator</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Maintenance" />Maintenance</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Operator" />Operator</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Prod Technician" />Prod Technician</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Quality Inspection" />Quality Inspection</label>
+                    <label><input type="checkbox" name="responsible_roles" value="Production Supervisor" />Production Supervisor</label>
+                  </div>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <h3><i data-lucide="notebook-pen"></i>Notes</h3>
+                <label>
+                  <span>Request Notes</span>
+                  <textarea name="note" placeholder="Add changeover details, constraints, or preparation notes"></textarea>
+                </label>
+              </section>
+
+              <div class="form-actions">
+                <a class="secondary-button" href="changeover.html">Cancel</a>
+                <button type="submit" class="primary-button"><i data-lucide="send"></i>Create Request</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

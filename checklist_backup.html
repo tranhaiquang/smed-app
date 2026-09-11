@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIETNAM SAMHO | SMED | LEAN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark">S</div>
+          <div>
+            <strong>SAMHO</strong>
+            <span>SMED HUB</span>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <p>Main Menu</p>
+          <a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+          <a href="changeover.html"><i data-lucide="clipboard-list"></i>Changeovers</a>
+          <a class="active" href="checklist.html"><i data-lucide="clipboard-check"></i>Checklist</a>
+        </nav>
+
+        <div class="user-card">
+          <div class="avatar"><i data-lucide="user-round"></i></div>
+          <div>
+            <strong>Admin</strong>
+            <span>Roles.Administrator</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <span class="section-label">Checklist</span>
+
+          <div class="top-actions">
+            <div class="language-switch" aria-label="Language selector">
+              <i data-lucide="globe-2"></i>
+              <button>VI</button>
+              <button>EN</button>
+              <button>KO</button>
+            </div>
+            <button class="icon-button" aria-label="Toggle theme">
+              <i data-lucide="sun"></i>
+            </button>
+            <div class="profile">
+              <span><i data-lucide="user-round"></i></span>
+              <div>
+                <strong>Admin</strong>
+                <small>Administrator</small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="page-head">
+          <div>
+            <h1>Changeover Checklist</h1>
+            <p>Track and complete changeover tasks by area</p>
+          </div>
+        </section>
+
+        <section class="checklist-controls" aria-label="Checklist filters">
+          <div class="filter-group">
+            <label>
+              <span>My Role</span>
+              <select data-checklist-role>
+                <option value="">Select Role</option>
+                <option value="Operator">Operator</option>
+                <option value="Team Leader">Team Leader</option>
+                <option value="QC">QC</option>
+                <option value="Material Handler">Material Handler</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="checklist-records" aria-label="Incoming changeover records" data-checklist-records>
+          <p class="empty-state">No changeover records in progress.</p>
+        </section>
+
+        <section class="checklist-detail" aria-label="Changeover checklist" data-checklist-detail hidden>
+          <div class="checklist-detail-header">
+            <button class="icon-button" data-checklist-back aria-label="Back to records">
+              <i data-lucide="arrow-left"></i>
+            </button>
+            <div>
+              <h2 data-checklist-title>Checklist</h2>
+              <p data-checklist-subtitle>Select your role and complete the tasks below</p>
+            </div>
+          </div>
+
+          <section class="checklist-progress" aria-label="Checklist progress" data-checklist-progress>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar" data-progress-bar style="width: 0%"></div>
+            </div>
+            <span class="progress-text" data-progress-text>0 / 0 tasks completed</span>
+          </section>
+
+          <section class="checklist-grid" aria-label="Changeover tasks" data-checklist-grid></section>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
