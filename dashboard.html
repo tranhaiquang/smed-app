@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body class="dashboard-page">
     <div class="app-shell">
@@ -83,6 +83,26 @@
           <section class="dashboard-filters" aria-label="Dashboard filters">
             <div class="filter-group">
               <label>
+                <span>Plant</span>
+                <select data-dashboard-plant>
+                  <option value="">All Plants</option>
+                </select>
+              </label>
+              <label>
+                <span>Area</span>
+                <select data-dashboard-area>
+                  <option value="">All Areas</option>
+                </select>
+              </label>
+              <label>
+                <span>Line</span>
+                <select data-dashboard-line>
+                  <option value="">All Lines</option>
+                </select>
+              </label>
+            </div>
+            <div class="filter-group">
+              <label>
                 <span>Time Range</span>
                 <select data-dashboard-time>
                   <option value="today">Today</option>
@@ -101,20 +121,6 @@
                   <input type="date" data-dashboard-date-to />
                 </label>
               </div>
-            </div>
-            <div class="filter-group">
-              <label>
-                <span>Area</span>
-                <select data-dashboard-area>
-                  <option value="">All Areas</option>
-                  <option value="HF">HF</option>
-                  <option value="Silk Screen">Silk Screen</option>
-                  <option value="Autocut">Autocut</option>
-                  <option value="SEMI Cut">SEMI Cut</option>
-                  <option value="GBOS Cut">GBOS Cut</option>
-                  <option value="Atom Cut">Atom Cut</option>
-                </select>
-              </label>
             </div>
           </section>
 

@@ -1,5 +1,82 @@
 const AREAS = ["HF", "Silk Screen", "Autocut", "SEMI Cut", "GBOS Cut", "Atom Cut"];
 
+const PLANT_AREA_LINES = {
+  "Plant A": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant B": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant C": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant D": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant E": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant F": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant G": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant H": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+  "Plant I": {
+    "HF": ["A01", "A02", "A03", "A04"],
+    "Silk Screen": ["B01", "B02", "B03"],
+    "Autocut": ["C01", "C02", "C03"],
+    "SEMI Cut": ["D01", "D02", "D03"],
+    "GBOS Cut": ["E01", "E02", "E03"],
+    "Atom Cut": ["F01", "F02", "F03"],
+  },
+};
+
+const CHANGEOVER_TARGET_MINUTES = 10;
+
 const MODELS = [
   "GKFCY", "GR740", "GT/PTRVL V4", "IZ740", "MW860 V15",
   "MW880 V15", "MW880G V15 GTX", "MWTHIER V9", "MWTHIG V9 GTX",
@@ -46,23 +123,17 @@ function generateSampleData() {
     return MODELS[Math.floor(Math.random() * MODELS.length)];
   }
 
-  const lines = {
-    "HF": ["A01", "A02", "A03", "A04"],
-    "Silk Screen": ["B01", "B02", "B03"],
-    "Autocut": ["C01", "C02", "C03"],
-    "SEMI Cut": ["D01", "D02", "D03"],
-    "GBOS Cut": ["E01", "E02", "E03"],
-    "Atom Cut": ["F01", "F02", "F03"],
-  };
-
   const teams = ["T", "M", "Q", "E"];
+
+  const plants = Object.keys(PLANT_AREA_LINES);
 
   AREAS.forEach((area) => {
     const count = 10 + Math.floor(Math.random() * 3);
     for (let i = 0; i < count; i++) {
       const status = pickStatus();
       const classification = Math.random() < 0.7 ? "Planned" : "Unplanned";
-      const areaLines = lines[area];
+      const plant = plants[Math.floor(Math.random() * plants.length)];
+      const areaLines = PLANT_AREA_LINES[plant][area];
       const line = areaLines[Math.floor(Math.random() * areaLines.length)];
       const start = randomDate();
       const plannedDuration = randomDuration();
@@ -74,7 +145,7 @@ function generateSampleData() {
         id: `sample-${id++}`,
         type: classification === "Planned" ? "Line Changeover" : "Mold Changeover",
         status,
-        plant: "SAMHO",
+        plant,
         production_line: `Line ${line}`,
         process: area,
         from_model: pickModel(),
@@ -98,7 +169,7 @@ const testChecklistRecords = [
     id: "test-1",
     type: "Line Changeover",
     status: "In Progress",
-    plant: "SAMHO",
+    plant: "Plant A",
     production_line: "Line D01",
     process: "SEMI Cut",
     from_model: "SM-234A",
@@ -113,7 +184,7 @@ const testChecklistRecords = [
     id: "test-2",
     type: "Mold Changeover",
     status: "In Progress",
-    plant: "SAMHO",
+    plant: "Plant B",
     production_line: "Line E02",
     process: "GBOS Cut",
     from_model: "GB-112X",
@@ -128,7 +199,7 @@ const testChecklistRecords = [
     id: "test-3",
     type: "Line Changeover",
     status: "In Progress",
-    plant: "SAMHO",
+    plant: "Plant C",
     production_line: "Line F01",
     process: "Atom Cut",
     from_model: "AT-890P",
@@ -143,7 +214,7 @@ const testChecklistRecords = [
     id: "test-4",
     type: "Line Changeover",
     status: "Submitted",
-    plant: "SAMHO",
+    plant: "Plant D",
     production_line: "Line A02",
     process: "HF",
     from_model: "HF-445C",
@@ -158,7 +229,7 @@ const testChecklistRecords = [
     id: "test-5",
     type: "Mold Changeover",
     status: "Submitted",
-    plant: "SAMHO",
+    plant: "Plant E",
     production_line: "Line B01",
     process: "Silk Screen",
     from_model: "SS-210M",
@@ -173,7 +244,7 @@ const testChecklistRecords = [
     id: "test-6",
     type: "Line Changeover",
     status: "Submitted",
-    plant: "SAMHO",
+    plant: "Plant F",
     production_line: "Line C03",
     process: "Autocut",
     from_model: "AC-550R",
@@ -285,6 +356,7 @@ const translations = {
     to: "To",
     area: "Area",
     allAreas: "All Areas",
+    allPlants: "All Plants",
     countAndDurationByArea: "Count & Duration by Area",
     countAndDurationSubtitle: "Changeover volume and total time per process area",
     plannedVsUnplanned: "Planned vs Unplanned",
@@ -370,6 +442,7 @@ const translations = {
     to: "Đến",
     area: "Khu vực",
     allAreas: "Tất cả khu vực",
+    allPlants: "Tất cả nhà máy",
     countAndDurationByArea: "Số lượng & Thời gian theo khu vực",
     countAndDurationSubtitle: "Số lượng chuyển đổi và tổng thời gian theo công đoạn",
     plannedVsUnplanned: "Kế hoạch vs Ngoài kế hoạch",
@@ -455,6 +528,7 @@ const translations = {
     to: "종료",
     area: "영역",
     allAreas: "전체 영역",
+    allPlants: "전체 공장",
     countAndDurationByArea: "영역별 건수 & 시간",
     countAndDurationSubtitle: "공정 영역별 체인지오버 수량 및 총 시간",
     plannedVsUnplanned: "계획 vs 비계획",
@@ -838,6 +912,11 @@ const checklistBack = document.querySelector("[data-checklist-back]");
 
 let selectedRecord = null;
 
+let checklistTimer = null;
+let checklistTimerStart = null;
+let checklistTimerLaps = [];
+let checklistTimerStopped = false;
+
 function getChecklistState() {
   return JSON.parse(localStorage.getItem("smed_checklist_state") || "{}");
 }
@@ -962,11 +1041,16 @@ function renderChecklistDetail() {
   progressBar.style.width = `${pct}%`;
   progressText.textContent = `${completedCount} / ${totalCount} tasks completed`;
 
-  const typeGroups = { External: [], Internal: [], Run: [] };
+  const typeGroups = { External: [], Internal: [] };
   tasks.forEach((t) => {
+    if (t.type === "Run") return;
     const group = typeGroups[t.type] || typeGroups.Internal;
     group.push(t);
   });
+
+  const internalTasks = tasks.filter((t) => t.type === "Internal");
+  const nextInternal = internalTasks.find((t) => !completed[t.id]);
+  const nextInternalId = nextInternal ? nextInternal.id : null;
 
   checklistGrid.innerHTML = Object.entries(typeGroups)
     .filter(([, items]) => items.length > 0)
@@ -981,14 +1065,20 @@ function renderChecklistDetail() {
           <div class="checklist-tasks">
             ${items.map((task) => {
               const isChecked = completed[task.id];
+              const times = completed["__times"] || {};
+              const taskTime = times[task.id];
+              const timeStr = taskTime != null ? formatTimerTime(taskTime) : "";
+              const isInternal = task.type === "Internal";
+              const isLocked = isInternal && !isChecked && nextInternalId !== task.id;
               return `
-                <label class="checklist-task ${isChecked ? "completed" : ""}">
-                  <input type="checkbox" data-task-id="${task.id}" ${isChecked ? "checked" : ""} />
+                <label class="checklist-task ${isChecked ? "completed" : ""} ${isLocked ? "disabled" : ""}">
+                  <input type="checkbox" data-task-id="${task.id}" ${isChecked ? "checked" : ""} ${isLocked ? "disabled" : ""} />
                   <span class="checklist-checkbox"></span>
                   <span class="checklist-task-info">
                     <span class="checklist-task-text">${escapeHtml(task.task)}</span>
                     <span class="checklist-task-role">${escapeHtml(task.role)}</span>
                   </span>
+                  ${isChecked && timeStr ? `<span class="checklist-task-time">${timeStr}</span>` : ""}
                 </label>
               `;
             }).join("")}
@@ -1008,11 +1098,13 @@ function showChecklistForRecord(recordId) {
   checklistDetail.classList.add("open");
   document.body.style.overflow = "hidden";
   renderChecklistDetail();
+  startChecklistTimer();
   window.lucide?.createIcons();
 }
 
 function showRecordList() {
   selectedRecord = null;
+  stopChecklistTimer();
   checklistDetail.classList.remove("open");
   document.body.style.overflow = "";
   checklistDetail.hidden = true;
@@ -1035,16 +1127,118 @@ checklistGrid?.addEventListener("change", (event) => {
   const checkbox = event.target.closest("[data-task-id]");
   if (!checkbox || !selectedRecord) return;
 
+  const area = selectedRecord.process || "";
+  const tasks = CHECKLIST_TASKS[area] || [];
+  const task = tasks.find((t) => t.id === checkbox.dataset.taskId);
+
+  if (checkbox.checked && task && task.type === "Internal") {
+    const state = getChecklistState();
+    const key = getChecklistKey(selectedRecord.id);
+    const completed = state[key] || {};
+    const internalTasks = tasks.filter((t) => t.type === "Internal");
+    const nextUnchecked = internalTasks.find((t) => !completed[t.id]);
+    if (nextUnchecked && nextUnchecked.id !== task.id) {
+      checkbox.checked = false;
+      return;
+    }
+  }
+
   const state = getChecklistState();
   const key = getChecklistKey(selectedRecord.id);
   if (!state[key]) state[key] = {};
 
   state[key][checkbox.dataset.taskId] = checkbox.checked;
+
+  if (checkbox.checked && task && task.type === "Internal") {
+    const elapsed = checklistTimerStart ? Math.floor((Date.now() - checklistTimerStart) / 1000) : 0;
+    if (!state[key]["__times"]) state[key]["__times"] = {};
+    state[key]["__times"][checkbox.dataset.taskId] = elapsed;
+  }
+
   saveChecklistState(state);
   renderChecklistDetail();
+  checkAllInternalDone();
 });
 
 renderChecklistRecords();
+
+function startChecklistTimer() {
+  stopChecklistTimer();
+  checklistTimerStart = Date.now();
+  checklistTimerLaps = [];
+  checklistTimerStopped = false;
+  checklistTimer = setInterval(updateChecklistTimerDisplay, 1000);
+  updateChecklistTimerDisplay();
+}
+
+function stopChecklistTimer() {
+  if (checklistTimer) {
+    clearInterval(checklistTimer);
+    checklistTimer = null;
+  }
+}
+
+function recordChecklistLap(taskId) {
+  if (!checklistTimerStart || checklistTimerStopped) return;
+  const elapsed = Math.floor((Date.now() - checklistTimerStart) / 1000);
+  const area = selectedRecord?.process || "";
+  const tasks = CHECKLIST_TASKS[area] || [];
+  const task = tasks.find((t) => t.id === taskId);
+  checklistTimerLaps.push({
+    taskId,
+    taskName: task?.task || taskId,
+    elapsed,
+  });
+}
+
+function checkAllInternalDone() {
+  if (!selectedRecord || checklistTimerStopped) return;
+  const area = selectedRecord.process || "";
+  const tasks = CHECKLIST_TASKS[area] || [];
+  const internalTasks = tasks.filter((t) => t.type === "Internal");
+  if (internalTasks.length === 0) return;
+
+  const state = getChecklistState();
+  const key = getChecklistKey(selectedRecord.id);
+  const completed = state[key] || {};
+  const allDone = internalTasks.every((t) => completed[t.id]);
+
+  if (allDone) {
+    checklistTimerStopped = true;
+    stopChecklistTimer();
+    const elapsed = Math.floor((Date.now() - checklistTimerStart) / 1000);
+    const statusEl = document.querySelector("[data-timer-status]");
+    if (statusEl) {
+      statusEl.textContent = `All Internal tasks done - Total: ${formatTimerTime(elapsed)}`;
+      statusEl.classList.add("stopped");
+    }
+  }
+}
+
+function updateChecklistTimerDisplay() {
+  const elapsedEl = document.querySelector("[data-timer-elapsed]");
+  if (!elapsedEl || !checklistTimerStart) return;
+  const elapsed = checklistTimerStopped
+    ? (checklistTimerLaps.length ? checklistTimerLaps[checklistTimerLaps.length - 1].elapsed : 0)
+    : Math.floor((Date.now() - checklistTimerStart) / 1000);
+  elapsedEl.textContent = formatTimerTime(elapsed);
+}
+
+function updateChecklistTimerLaps() {
+  const lapsEl = document.querySelector("[data-timer-laps]");
+  if (!lapsEl) return;
+  lapsEl.innerHTML = checklistTimerLaps.map((lap, i) => {
+    const prev = i > 0 ? checklistTimerLaps[i - 1].elapsed : 0;
+    const lapTime = lap.elapsed - prev;
+    return `<div class="timer-lap"><span class="lap-num">Lap ${i + 1}</span><span class="lap-task">${escapeHtml(lap.taskName)}</span><span class="lap-time">${formatTimerTime(lapTime)}</span></div>`;
+  }).join("");
+}
+
+function formatTimerTime(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
 function showChangeoverWarning() {
   if (!loadedRequests.length) return;
@@ -1117,9 +1311,48 @@ if (checklistRecords) {
 }
 
 document.querySelector("[data-dashboard-time]")?.addEventListener("change", () => renderDashboard(loadedDashboardRecords));
-document.querySelector("[data-dashboard-area]")?.addEventListener("change", () => renderDashboard(loadedDashboardRecords));
+document.querySelector("[data-dashboard-plant]")?.addEventListener("change", () => {
+  populateDashboardAreas();
+  populateDashboardLines();
+  renderDashboard(loadedDashboardRecords);
+});
+document.querySelector("[data-dashboard-area]")?.addEventListener("change", () => {
+  populateDashboardLines();
+  renderDashboard(loadedDashboardRecords);
+});
+document.querySelector("[data-dashboard-line]")?.addEventListener("change", () => renderDashboard(loadedDashboardRecords));
 document.querySelector("[data-dashboard-date-from]")?.addEventListener("change", () => renderDashboard(loadedDashboardRecords));
 document.querySelector("[data-dashboard-date-to]")?.addEventListener("change", () => renderDashboard(loadedDashboardRecords));
+
+function populateDashboardPlant() {
+  const plantSelect = document.querySelector("[data-dashboard-plant]");
+  if (!plantSelect) return;
+  const plants = ["Plant A", "Plant B", "Plant C", "Plant D", "Plant E", "Plant F", "Plant G", "Plant H", "Plant I"];
+  plantSelect.innerHTML = `<option value="">All Plants</option>` + plants.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+}
+
+function populateDashboardAreas() {
+  const areaSelect = document.querySelector("[data-dashboard-area]");
+  if (!areaSelect) return;
+  const plantSelect = document.querySelector("[data-dashboard-plant]");
+  const selectedPlant = plantSelect?.value || "";
+  const plants = selectedPlant ? [selectedPlant] : Object.keys(PLANT_AREA_LINES);
+  const areas = [...new Set(plants.flatMap((p) => Object.keys(PLANT_AREA_LINES[p] || {})))].sort();
+  areaSelect.innerHTML = `<option value="">All Areas</option>` + areas.map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+}
+
+function populateDashboardLines() {
+  const lineSelect = document.querySelector("[data-dashboard-line]");
+  if (!lineSelect) return;
+  const plantSelect = document.querySelector("[data-dashboard-plant]");
+  const areaSelect = document.querySelector("[data-dashboard-area]");
+  const selectedPlant = plantSelect?.value || "";
+  const selectedArea = areaSelect?.value || "";
+  const plants = selectedPlant ? [selectedPlant] : Object.keys(PLANT_AREA_LINES);
+  const areas = selectedArea ? [selectedArea] : plants.flatMap((p) => Object.keys(PLANT_AREA_LINES[p] || {}));
+  const lines = [...new Set(areas.flatMap((a) => plants.flatMap((p) => PLANT_AREA_LINES[p]?.[a] || [])))].sort();
+  lineSelect.innerHTML = `<option value="">All Lines</option>` + lines.map((l) => `<option value="Line ${escapeHtml(l)}">Line ${escapeHtml(l)}</option>`).join("");
+}
 
 async function loadRequests() {
   const isChecklistPage = !!checklistRecords;
@@ -1144,12 +1377,17 @@ async function loadDashboard() {
   if (!dashboard) return;
 
   loadedDashboardRecords = applyTimedStatuses([...sampleRequests, ...testChecklistRecords]);
+  populateDashboardPlant();
+  populateDashboardAreas();
+  populateDashboardLines();
   renderDashboard(loadedDashboardRecords);
 }
 
 function renderDashboard(records) {
   const timeSelect = document.querySelector("[data-dashboard-time]");
   const areaSelect = document.querySelector("[data-dashboard-area]");
+  const plantSelect = document.querySelector("[data-dashboard-plant]");
+  const lineSelect = document.querySelector("[data-dashboard-line]");
   const dateFrom = document.querySelector("[data-dashboard-date-from]");
   const dateTo = document.querySelector("[data-dashboard-date-to]");
   const customRange = document.querySelector("[data-custom-range]");
@@ -1158,21 +1396,35 @@ function renderDashboard(records) {
 
   customRange.hidden = timeSelect.value !== "custom";
 
-  const filtered = filterDashboardRecords(records, timeSelect.value, areaSelect.value, dateFrom?.value, dateTo?.value);
+  const filtered = filterDashboardRecords(records, {
+    timeRange: timeSelect.value,
+    plant: plantSelect?.value || "",
+    area: areaSelect.value,
+    line: lineSelect?.value || "",
+    dateFrom: dateFrom?.value,
+    dateTo: dateTo?.value,
+  });
 
   renderDoubleBarChart(filtered, areaSelect.value);
   renderClassificationPie(filtered);
   window.lucide?.createIcons();
 }
 
-function filterDashboardRecords(records, timeRange, area, dateFrom, dateTo) {
+function filterDashboardRecords(records, options = {}) {
+  const { timeRange = "", plant = "", area = "", line = "", dateFrom, dateTo } = options;
   const now = new Date();
   const todayKey = formatDateKey(now);
 
   let filtered = records.map((record) => ({ ...record, status: getTimedStatus(record) }));
 
+  if (plant) {
+    filtered = filtered.filter((record) => (record.plant || "") === plant);
+  }
   if (area) {
     filtered = filtered.filter((record) => (record.process || "") === area);
+  }
+  if (line) {
+    filtered = filtered.filter((record) => (record.production_line || record.line || "") === line);
   }
 
   if (timeRange === "today") {
@@ -1218,16 +1470,20 @@ function renderAggregateBarChart(chart, records) {
       const d = Number(r.actual_duration ?? r.duration ?? r.planned_duration_minutes);
       return sum + (Number.isFinite(d) ? d : 0);
     }, 0);
-    return { area, count, totalDuration };
+    const avgDuration = count ? totalDuration / count : 0;
+    return { area, count, totalDuration, avgDuration };
   });
 
   const maxCount = Math.max(...areaData.map((d) => d.count), 1);
   const maxDuration = Math.max(...areaData.map((d) => d.totalDuration), 1);
+  const targetPct = Math.min(100, Math.round((CHANGEOVER_TARGET_MINUTES / maxDuration) * 100));
 
-  chart.innerHTML = areaData
+  chart.innerHTML = `<div class="chart-target-line" style="bottom: ${targetPct}%" title="Target: ${CHANGEOVER_TARGET_MINUTES} min"><span>Target ${CHANGEOVER_TARGET_MINUTES}m</span></div>` +
+    areaData
     .map((d) => {
       const countHeight = Math.max(8, Math.round((d.count / maxCount) * 100));
       const durationHeight = Math.max(8, Math.round((d.totalDuration / maxDuration) * 100));
+      const meetsTarget = d.avgDuration <= CHANGEOVER_TARGET_MINUTES;
       return `
         <div class="double-bar-group">
           <div class="double-bar-pair">
@@ -1235,7 +1491,7 @@ function renderAggregateBarChart(chart, records) {
               <span class="double-bar bar-count" style="height: ${countHeight}%" title="${d.count} records"></span>
             </div>
             <div class="double-bar-wrap">
-              <span class="double-bar bar-duration" style="height: ${durationHeight}%" title="${d.totalDuration} min"></span>
+              <span class="double-bar bar-duration ${meetsTarget ? "target-met" : "target-missed"}" style="height: ${durationHeight}%" title="${d.totalDuration} min (avg ${Math.round(d.avgDuration)}m)"></span>
             </div>
           </div>
           <div class="double-bar-values">
@@ -1265,8 +1521,10 @@ function renderDetailBarChart(chart, records, area) {
     const d = Number(r.actual_duration ?? r.duration ?? r.planned_duration_minutes);
     return Number.isFinite(d) ? d : 1;
   }), 1);
+  const targetPct = Math.min(100, Math.round((CHANGEOVER_TARGET_MINUTES / maxDuration) * 100));
 
-  chart.innerHTML = sorted
+  chart.innerHTML = `<div class="chart-target-line" style="bottom: ${targetPct}%" title="Target: ${CHANGEOVER_TARGET_MINUTES} min"><span>Target ${CHANGEOVER_TARGET_MINUTES}m</span></div>` +
+    sorted
     .map((r) => {
       const duration = Number(r.actual_duration ?? r.duration ?? r.planned_duration_minutes);
       const d = Number.isFinite(duration) ? duration : 0;
@@ -1275,7 +1533,7 @@ function renderDetailBarChart(chart, records, area) {
       const dateLabel = r.planned_start
         ? new Intl.DateTimeFormat(getDateLocale(), { month: "short", day: "2-digit" }).format(new Date(r.planned_start))
         : "--";
-      const statusClass = normalizeStatus(r.status).toLowerCase().replace(/\s+/g, "-");
+      const meetsTarget = d <= CHANGEOVER_TARGET_MINUTES;
       return `
         <div class="double-bar-group detail-bar">
           <div class="double-bar-pair">
@@ -1283,7 +1541,7 @@ function renderDetailBarChart(chart, records, area) {
               <span class="double-bar bar-count" style="height: 100%" title="1 record"></span>
             </div>
             <div class="double-bar-wrap">
-              <span class="double-bar bar-duration status-${statusClass}" style="height: ${height}%" title="${d} min"></span>
+              <span class="double-bar bar-duration ${meetsTarget ? "target-met" : "target-missed"}" style="height: ${height}%" title="${d} min"></span>
             </div>
           </div>
           <div class="double-bar-values">
@@ -1407,6 +1665,7 @@ function createRequestCard(request) {
   const group = request.team || request.tean || request.responsible_group || (request.type || "T").charAt(0);
   const area = request.process || "";
   const checklistUrl = area ? `checklist.html?area=${encodeURIComponent(area)}&id=${encodeURIComponent(request.id)}` : "#";
+  const meetsTarget = isCompleted && Number.isFinite(Number(actual)) && Number(actual) <= CHANGEOVER_TARGET_MINUTES;
 
   return `
     <article class="request-card status-${statusClass}" data-request-id="${escapeHtml(request.id)}">
@@ -1415,6 +1674,7 @@ function createRequestCard(request) {
           <div class="badges">
             <span>${escapeHtml(area || request.type || "Changeover")}</span>
             <mark>${escapeHtml(translateStatus(status))}</mark>
+            ${isCompleted ? `<mark class="target-badge ${meetsTarget ? "target-met" : "target-missed"}">${meetsTarget ? "Target Met" : "Over Target"}</mark>` : ""}
           </div>
           <h2>${escapeHtml(request.from_model || "--")} <i data-lucide="chevron-right"></i> <strong>${escapeHtml(request.to_model || "--")}</strong></h2>
           <dl>
@@ -1694,6 +1954,8 @@ function translatePage() {
   setTextAll("[data-dashboard-date-from]", translate("from"));
   setTextAll("[data-dashboard-date-to]", translate("to"));
   setTextAll("[data-dashboard-area] option[value='']", translate("allAreas"));
+  setTextAll("[data-dashboard-plant] option[value='']", translate("allPlants"));
+  setTextAll("[data-dashboard-line] option[value='']", translate("allLines"));
   setTextAll(".chart-panel .panel-head h2", "");
   const chartPanels = document.querySelectorAll(".chart-panel .panel-head");
   if (chartPanels[0]) {
